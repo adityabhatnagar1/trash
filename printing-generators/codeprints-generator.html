@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Lab File Blocks</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+:root{--ac:#0A84FF;--ac-hover:#0070E0;--bg:#F5F5F7;--surface:rgba(255,255,255,.85);--surface-solid:#FFF;--ink:#1D1D1F;--mu:#86868B;--ln:#E5E5EA;--focus-ring:rgba(10,132,255,.25);--shadow-sm:0 2px 8px rgba(0,0,0,.04);--shadow-md:0 8px 24px rgba(0,0,0,.08);--shadow-lg:0 12px 48px rgba(0,0,0,.12);--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--ease:cubic-bezier(.25,.8,.32,1)}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;font:13.5px/1.5 'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#D2D2D7;border-radius:10px}::-webkit-scrollbar-thumb:hover{background:#AEAEB2}
+
+/* Top control panel */
+#ui{position:sticky;top:0;z-index:100;padding:20px 24px;background:var(--surface);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--ln);box-shadow:0 4px 24px rgba(0,0,0,.04);animation:slideDown .5s var(--ease) both}
+#ui b{font-size:18px;font-weight:700;letter-spacing:-.02em;background:linear-gradient(135deg,#1D1D1F 0%,#434353 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hint{color:var(--mu);font-size:12px}
+#cfg{display:flex;flex-wrap:wrap;gap:12px 20px;margin:16px 0;padding:16px;background:var(--surface-solid);border-radius:var(--radius-md);border:1px solid var(--ln);box-shadow:var(--shadow-sm)}
+#cfg label{display:inline-flex;align-items:center;gap:8px;font-weight:500;font-size:12px;color:var(--mu)}
+#cfg input[type=number],#cfg select,.card input:not([type]),.card select{font:13px 'Inter',sans-serif;padding:6px 10px;border:1px solid var(--ln);border-radius:var(--radius-sm);background:#F9F9FB;color:var(--ink);transition:all .2s var(--ease)}
+#cfg input[type=number]{width:70px}
+.card input:not([type]){width:100%}
+#cfg input:focus,#cfg select:focus,.card input:focus,.card select:focus,.card textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 4px var(--focus-ring);background:#fff}
+#cfg input[type=checkbox]{accent-color:var(--ac);width:16px;height:16px;cursor:pointer}
+
+/* Buttons */
+.btn,button{padding:8px 16px;cursor:pointer;border:1px solid var(--ln);background:var(--surface-solid);border-radius:var(--radius-sm);font:500 13px 'Inter',sans-serif;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .2s var(--ease);box-shadow:0 1px 2px rgba(0,0,0,.03)}
+button:hover,.btn:hover{border-color:#C7C7CC;transform:translateY(-1px);box-shadow:var(--shadow-md)}
+button:active,.btn:active{transform:translateY(1px) scale(.98);box-shadow:0 1px 2px rgba(0,0,0,.03)}
+#add,#prn{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 4px 12px rgba(10,132,255,.3)}
+#add:hover,#prn:hover{background:var(--ac-hover);border-color:transparent}
+
+/* Experiment cards */
+#list{display:flex;flex-direction:column;gap:16px;margin:16px 0}
+.card{background:var(--surface-solid);border:1px solid var(--ln);border-radius:var(--radius-md);padding:16px;display:grid;grid-template-columns:auto 1fr auto auto auto;gap:12px;align-items:center;box-shadow:var(--shadow-sm);animation:pop .4s var(--ease) both;transition:all .3s var(--ease)}
+.card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:#D1D1D6}
+.card b{color:var(--mu);font-size:12px;font-variant-numeric:tabular-nums}
+.card textarea{grid-column:span 5;height:140px;tab-size:4;font:12px/1.5 'JetBrains Mono',monospace;white-space:pre;padding:12px;border:1px solid var(--ln);border-radius:var(--radius-sm);background:#F9F9FB;resize:vertical;transition:all .2s var(--ease)}
+
+/* Preview canvas */
+#pv{padding:40px;display:flex;flex-wrap:wrap;gap:24px;justify-content:center;align-items:flex-start;min-height:50px}
+
+/* Paper tiles */
+.tile{display:inline-block;vertical-align:top;position:relative;padding:4mm;background:#fff;border-radius:4px;box-shadow:var(--shadow-lg);break-inside:avoid;page-break-inside:avoid;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+#pv.anim .tile{animation:pop .5s var(--ease) both}
+.tile:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(0,0,0,.15)}
+.ttl{font:600 9pt 'Inter',sans-serif;margin-bottom:1.5mm;height:4mm;overflow:hidden;white-space:nowrap;color:var(--ink)}
+
+/* Print measurement logic (unchanged) */
+.box{position:relative;border:.3pt solid #000;padding:1.5mm;overflow:hidden;background:#fff;color:#000;border-radius:2px}
+.box.ruled{background-origin:content-box;background-clip:padding-box}
+.row{display:flex;width:max-content}
+.row pre{margin:0;white-space:pre;tab-size:4;font:inherit}
+.g{text-align:right;padding-right:1.5mm;margin-right:2mm!important;border-right:.3pt solid #000;user-select:none;color:#666}
+.m{position:absolute;width:2.5mm;height:2.5mm;border:0 solid #000;opacity:.5}
+.tl{top:0;left:0;border-width:.3pt 0 0 .3pt}
+.tr{top:0;right:0;border-width:.3pt .3pt 0 0}
+.bl{bottom:0;left:0;border-width:0 0 .3pt .3pt}
+.br{bottom:0;right:0;border-width:0 .3pt .3pt 0}
+.ov{position:absolute;top:0;right:0;background:#FF3B30;color:#fff;font:bold 10px 'Inter',sans-serif;padding:2px 6px;border-bottom-left-radius:4px;z-index:10}
+
+/* Code highlights */
+.hljs-keyword,.hljs-built_in{font-weight:600;color:#005cc5}
+.hljs-comment,.hljs-quote{font-style:italic;color:#6a737d}
+.hljs-string{color:#032f62}
+.hljs-number{color:#005cc5}
+
+@keyframes pop{0%{opacity:0;transform:scale(.96) translateY(10px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes slideDown{0%{opacity:0;transform:translateY(-20px)}100%{opacity:1;transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Print: strip UI, shadows and colour so paper output matches the original */
+@page{size:A4;margin:8mm}
+@media print{
+*{animation:none!important;transition:none!important;box-shadow:none!important}
+#ui,.ov{display:none!important}
+body,#pv{background:#fff;margin:0;padding:0;gap:0;display:block}
+.tile{box-shadow:none;border-radius:0;padding:4mm;transform:none!important;background:transparent}
+.box{border-radius:0}
+.m{opacity:1}
+.g,.hljs-keyword,.hljs-built_in,.hljs-string,.hljs-number{color:#000}
+.hljs-comment,.hljs-quote{color:#555}
+}
+</style></head><body>
+<div id="ui">
+<b>Lab File Blocks</b> <span class="hint">&mdash; print at 100% scale, margins
+none/default, background graphics off.</span>
+<div id="cfg"></div>
+<div id="list"></div>
+<button id="add">+ Add experiment</button>
+<button id="prn">Print / Save PDF</button>
+<button id="exp">Export JSON</button>
+<label class="btn">Import JSON
+<input type="file" id="imp" accept=".json" hidden></label>
+</div>
+<div id="pv" class="anim"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/verilog.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/vhdl.min.js"></script>
+<script>
+const KEY='labfile.v1',$=s=>document.querySelector(s);
+const el=(t,p={})=>Object.assign(document.createElement(t),p);
+const LANGS=['c','cpp','python','verilog','vhdl','java','plain'];
+const FONTS=['JetBrains Mono','DejaVu Sans Mono','Courier New'];
+const FIELDS=[
+['cw','Code W cm','number'],['ch','Code H cm','number'],
+['ow','Out W cm','number'],['oh','Out H cm','number'],
+['fs','Font pt','number'],['rs','Line mm','number'],
+['font','Font','select',FONTS],
+['ln','Line numbers','checkbox'],['ti','Title','checkbox'],
+['cut','Cut marks','checkbox'],['rule','Ruled lines','checkbox']];
+const DEF={cw:18,ch:12,ow:18,oh:8,fs:10,rs:6,font:FONTS[0],
+ln:true,ti:true,cut:true,rule:false};
+const uid=()=>Math.random().toString(36).slice(2,9);
+const newEx=()=>({id:uid(),title:'',lang:'c',code:'',out:''});
+let S={cfg:{...DEF},ex:[]},timer;
+try{const j=JSON.parse(localStorage.getItem(KEY));
+if(j&&Array.isArray(j.ex))S={cfg:{...DEF,...j.cfg},ex:j.ex}}catch(e){}
+if(!S.ex.length)S.ex.push(newEx());
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}
+catch(e){}};
+const upd=()=>{save();clearTimeout(timer);timer=setTimeout(render,120)};
+
+function buildCfg(){
+const box=$('#cfg');box.innerHTML='';
+FIELDS.forEach(([k,l,t,o])=>{
+const lab=el('label',{textContent:l+' '});let i;
+if(t==='select'){
+i=el('select');o.forEach(v=>i.append(new Option(v,v)));
+i.value=S.cfg[k];
+}else{
+i=el('input',{type:t,step:'any'});
+if(t==='checkbox')i.checked=S.cfg[k];else i.value=S.cfg[k];
+}
+i.oninput=i.onchange=()=>{
+S.cfg[k]=t==='checkbox'?i.checked
+:t==='number'?(+i.value>0?+i.value:DEF[k]):i.value;
+upd();
+};
+lab.append(i);box.append(lab);
+});
+}
+
+function buildEx(){
+const box=$('#list');box.innerHTML='';
+S.ex.forEach((e,n)=>{
+const c=el('div',{className:'card'});
+const t=el('input',{placeholder:'Title',value:e.title});
+t.oninput=()=>{e.title=t.value;upd()};
+const l=el('select');
+LANGS.forEach(v=>l.append(new Option(v,v)));
+l.value=e.lang;l.onchange=()=>{e.lang=l.value;upd()};
+const ta=(k,ph)=>{
+const x=el('textarea',{placeholder:ph,value:e[k],spellcheck:false});
+x.oninput=()=>{e[k]=x.value;upd()};
+return x;
+};
+const b=(txt,f)=>el('button',{textContent:txt,onclick:f});
+c.append(el('b',{textContent:'#'+(n+1)}),t,l,
+b('Duplicate',()=>{
+S.ex.splice(n+1,0,{...e,id:uid()});buildEx();upd();
+}),
+b('Delete',()=>{
+S.ex.splice(n,1);buildEx();upd();
+}),
+ta('code','CODE'),ta('out','OUTPUT'));
+box.append(c);
+});
+}
+
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+.replace(/>/g,'&gt;');
+
+function hl(code,lang){
+if(lang==='plain'||!window.hljs||!hljs.getLanguage(lang))
+return esc(code);
+try{return hljs.highlight(code,{language:lang,
+ignoreIllegals:true}).value}catch(e){return esc(code)}
+}
+
+function block(text,lang,w,h,isCode){
+const c=S.cfg;
+const box=el('div',{className:'box'});
+box.style.width=w+'cm';box.style.height=h+'cm';
+const row=el('div',{className:'row'});
+const src=text.replace(/\r/g,'').replace(/\n+$/,'');
+if(isCode&&c.ln){
+const n=src.split('\n').length;
+row.append(el('pre',{className:'g',
+textContent:Array.from({length:n},(_,i)=>i+1).join('\n')}));
+}
+const p=el('pre');
+p.innerHTML=isCode?hl(src,lang):esc(src);
+row.append(p);box.append(row);
+const ruled=isCode&&c.rule;
+if(ruled){
+box.classList.add('ruled');
+box.style.backgroundImage='linear-gradient(to bottom,'
++'transparent calc(100% - .15mm),#777 0)';
+box.style.backgroundSize='100% '+c.rs+'mm';
+}
+return {box,row,ruled};
+}
+
+function fit(j){
+const c=S.cfg,{box,row,ruled}=j,cs=getComputedStyle(box);
+const aw=box.clientWidth-parseFloat(cs.paddingLeft)
+-parseFloat(cs.paddingRight);
+const ah=box.clientHeight-parseFloat(cs.paddingTop)
+-parseFloat(cs.paddingBottom);
+row.style.lineHeight=ruled?c.rs+'mm':'1.25';
+const fw=s=>{row.style.fontSize=s+'pt';
+return row.offsetWidth<=aw+.5};
+const fh=()=>row.offsetHeight<=ah+.5;
+const ok=s=>fw(s)&&(ruled||fh());
+let lo=6,hi=Math.max(6,c.fs);
+if(!ok(hi)){
+if(ok(lo)){
+for(let i=0;i<14;i++){
+const m=(lo+hi)/2;
+if(ok(m))lo=m;else hi=m;
+}
+}
+fw(lo);
+}
+return fw(+row.style.fontSize.replace('pt',''))&&fh();
+}
+
+function tile(title,b){
+const t=el('div',{className:'tile'});
+if(S.cfg.cut)['tl','tr','bl','br'].forEach(k=>
+t.append(el('i',{className:'m '+k})));
+if(S.cfg.ti)t.append(el('div',{className:'ttl',textContent:title}));
+t.append(b.box);
+return t;
+}
+
+function render(){
+const pv=$('#pv'),c=S.cfg,jobs=[];
+pv.innerHTML='';
+pv.style.fontFamily="'"+c.font
++"','DejaVu Sans Mono','Courier New',monospace";
+S.ex.forEach(e=>{
+const a=block(e.code,e.lang,c.cw,c.ch,true);
+const b=block(e.out,'plain',c.ow,c.oh,false);
+pv.append(tile(e.title,a),
+tile(e.title?e.title+' (Output)':'Output',b));
+jobs.push(a,b);
+});
+jobs.forEach(j=>{
+if(!fit(j))j.box.append(el('span',{className:'ov',
+textContent:'OVERFLOW'}));
+});
+}
+
+function init(){buildCfg();buildEx();upd();setTimeout(()=>$('#pv').classList.remove('anim'),900)}
+$('#add').onclick=()=>{S.ex.push(newEx());buildEx();upd()};
+$('#prn').onclick=()=>window.print();
+$('#exp').onclick=()=>{
+const blob=new Blob([JSON.stringify(S,null,1)],
+{type:'application/json'});
+el('a',{href:URL.createObjectURL(blob),
+download:'labfile.json'}).click();
+};
+$('#imp').onchange=ev=>{
+const f=ev.target.files[0];
+if(!f)return;
+const r=new FileReader();
+r.onload=()=>{
+try{
+const j=JSON.parse(r.result);
+if(!Array.isArray(j.ex))throw 0;
+S={cfg:{...DEF,...j.cfg},
+ex:j.ex.map(e=>({...newEx(),...e}))};
+if(!S.ex.length)S.ex.push(newEx());
+init();
+}catch(x){alert('Invalid JSON')}
+};
+r.readAsText(f);
+ev.target.value='';
+};
+init();
+</script></body></html>

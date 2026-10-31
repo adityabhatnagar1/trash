@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lab File Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{--ac:#000;--ink:#111827;--mu:#444;--ln:#bdbdbd}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;font:13px Inter,Arial,sans-serif;background:#e5e7eb;color:var(--ink)}
+#app{display:grid;grid-template-columns:390px 1fr;height:100vh}
+#side{display:flex;flex-direction:column;background:#fff;border-right:1px solid var(--ln);min-height:0}
+#ed{flex:1;overflow:auto;padding:16px}
+#ed h2.br{font:700 14px Inter;margin:0 0 2px;color:var(--ac);display:block;text-transform:none;letter-spacing:0;border:0;padding:0}
+#ed h3{font:700 10px Inter;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin:18px 0 6px;border-bottom:1px solid #e5e7eb;padding-bottom:4px}
+#ed label{display:block;font-weight:500;font-size:11px;color:#222;margin-top:8px}
+#ed input:not([type=checkbox]):not([type=file]),#ed textarea,#ed select{width:100%;font:12.5px Inter;padding:6px 8px;border:1px solid var(--ln);border-radius:6px;margin-top:3px;background:#fff}
+#ed textarea{font:11.5px/1.45 "JetBrains Mono",monospace;white-space:pre;tab-size:4;resize:vertical}
+#ed input:focus,#ed textarea:focus,#ed select:focus{outline:2px solid #888;border-color:var(--ac)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button,.btn{padding:7px 12px;border:1px solid var(--ln);background:#fff;border-radius:6px;cursor:pointer;font:500 12px Inter;display:inline-block;margin-top:8px}
+button:hover,.btn:hover{border-color:var(--ac)}
+.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+.bar{padding:10px 16px 12px;border-top:1px solid var(--ln);background:#f5f5f5}
+.bar button{margin:0 6px 0 0}.nt{font-size:11px;color:var(--mu);margin:6px 0 0}
+.sc{border:1px solid #e5e7eb;border-radius:8px;padding:8px;margin-top:8px;background:#fafafa}
+.sh{display:flex;gap:6px;align-items:center}.sh input[type=text],.sh input:not([type]){margin:0!important}
+.sh button{margin:0;padding:4px 8px}.sc textarea{margin-top:6px!important}
+#il{list-style:none;padding:0;margin:8px 0 0}
+#il li{display:flex;gap:8px;align-items:center;border:1px solid #e5e7eb;border-radius:8px;padding:6px;margin-bottom:6px;background:#fff}
+#il li.ov{border-color:var(--ac);background:#f0f0f0}
+#il img{width:56px;height:42px;object-fit:cover;border-radius:4px;border:1px solid var(--ln)}
+#il div{flex:1;font-size:11px}#il div input{margin:2px 0 0!important}
+#il button{margin:0;padding:3px 7px}.hd{cursor:grab;color:var(--mu);font-size:18px;padding:0 2px;user-select:none}
+#pv{overflow:auto;padding:16px}
+.pg{position:relative;background:#fff;width:210mm;height:296.6mm;margin:0 auto 14px;padding:20mm 15mm 0 25mm;box-shadow:0 2px 14px rgba(0,0,0,.18);overflow:hidden;font:11pt/1.5 "Source Serif 4",Georgia,"Times New Roman",serif;color:#000}
+.pc{height:255mm;overflow:hidden}
+.rh,.ft{position:absolute;left:25mm;right:15mm;display:flex;justify-content:space-between;font:500 7.5pt Inter,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
+.rh{top:10mm;padding-bottom:1.5mm;border-bottom:.5pt solid var(--ln)}
+.ft{bottom:10mm;padding-top:1.5mm;border-top:.5pt solid var(--ln)}.ft b{color:var(--ac);font-weight:700}
+.ti{border-top:2pt solid var(--ac);padding-top:2mm;margin-bottom:2mm}
+.tk{display:flex;justify-content:space-between;font:700 7pt Inter,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
+.tk span:last-child{color:var(--ac)}
+h1{font:700 15pt/1.25 "Source Serif 4",Georgia,serif;color:var(--ac);margin:1.5mm 0 2.5mm}
+.tm{display:flex;gap:5mm;border-top:.5pt solid var(--ln);border-bottom:.5pt solid var(--ln);padding:1.2mm 0;font:500 8.5pt Inter,Arial,sans-serif}
+.tm em{display:block;font-style:normal;font-size:6pt;letter-spacing:.12em;text-transform:uppercase;color:var(--mu)}
+h2{font:700 9.5pt Inter,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ac);margin:6mm 0 2.5mm;padding-bottom:1.2mm;border-bottom:.5pt solid var(--ln);display:flex;align-items:center}
+h2 span{background:var(--ac);color:#fff;border-radius:1mm;padding:.4mm 1.8mm;margin-right:2.5mm;font-size:8pt;letter-spacing:.04em}
+p{margin:0 0 2mm}code{font:9.5pt "JetBrains Mono","DejaVu Sans Mono",Consolas,monospace;background:#eee;padding:0 .8mm;border-radius:.6mm}
+.li{display:flex;gap:2mm;margin:0 0 1mm}.li s{text-decoration:none;color:var(--ac);font-weight:700;min-width:4.5mm;text-align:right}
+.run{border:0 solid #777}
+.cl{position:relative;border-width:0 .5pt;background:#f5f5f5;padding:0 2.5mm 0 11mm;white-space:pre-wrap;font:8.6pt/1.45 "JetBrains Mono","DejaVu Sans Mono",Consolas,monospace;tab-size:4}
+.cl.f{border-top-width:.5pt;padding-top:1.5mm;border-radius:1mm 1mm 0 0}.cl.e{border-bottom-width:.5pt;padding-bottom:1.5mm;margin-bottom:3mm;border-radius:0 0 1mm 1mm}
+.cl:before{content:attr(data-n);position:absolute;left:0;width:8mm;text-align:right;color:#777;font-size:7pt}
+.cl i{color:#555}
+.tr{display:grid;border-width:0 .5pt .5pt;font:9pt/1.35 Inter,Arial,sans-serif}.tr.f{border-top-width:.5pt}.tr.e{margin-bottom:3mm}
+.tr span{padding:1mm 2mm;border-left:.5pt solid #777;overflow-wrap:anywhere}.tr span:first-child{border-left:0}
+.th{background:#ebebeb;font-weight:700}
+.fr{display:flex;gap:4mm;justify-content:center;align-items:flex-start;margin:2mm 0 4mm}
+figure{margin:0;text-align:center;flex:0 0 calc((100% - (var(--k) - 1) * 4mm) / var(--k))}
+figure img{display:block;margin:0 auto;height:auto;border:.5pt solid #777}
+figcaption{font:500 8.5pt Inter,Arial,sans-serif;color:#222;margin-top:1.5mm}
+
+/* motion */
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes slide{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+#ed>*{animation:slide .45s cubic-bezier(.2,.7,.2,1) both}
+#ed>*:nth-child(2){animation-delay:.04s}#ed>*:nth-child(3){animation-delay:.08s}#ed>*:nth-child(4){animation-delay:.12s}#ed>*:nth-child(5){animation-delay:.16s}#ed>*:nth-child(n+6){animation-delay:.2s}
+.sc,#il li{animation:pop .35s cubic-bezier(.2,.7,.2,1) both;transition:border-color .2s,box-shadow .2s,transform .2s,background .2s}
+.sc:hover,#il li:hover{border-color:#000;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+#il li.ov{transform:translateY(3px)}
+button,.btn{transition:transform .15s,background .2s,color .2s,border-color .2s,box-shadow .2s}
+button:hover,.btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.15)}
+button:active,.btn:active{transform:translateY(0) scale(.97)}
+.p:hover{background:#222}
+#ed input,#ed textarea,#ed select{transition:border-color .2s,box-shadow .2s,outline-color .2s}
+.pg.in{animation:up .6s cubic-bezier(.2,.7,.2,1) both}
+.pg{transition:box-shadow .3s}.pg:hover{box-shadow:0 6px 28px rgba(0,0,0,.25)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{*{animation:none!important;transition:none!important}}
+
+@keyframes sh{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes tin{from{opacity:0;transform:translate(-50%,16px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
+#ed h2.br{background:linear-gradient(90deg,#000 30%,#888 50%,#000 70%) 0 0/200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 4s linear infinite,slide .45s both}
+#ed h3{position:relative}#ed h3:after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:100%;background:#000;transform-origin:left;animation:grow .7s cubic-bezier(.2,.7,.2,1) both}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+#ed input:focus,#ed textarea:focus,#ed select:focus{box-shadow:0 0 0 4px rgba(0,0,0,.07)}
+.btn,button{position:relative;overflow:hidden}
+button:after,.btn:after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(0,0,0,.14) 0,transparent 60%);opacity:0;transform:scale(.4);transition:opacity .4s,transform .4s}
+button:active:after,.btn:active:after{opacity:1;transform:scale(2.2);transition:0s}
+#il img{transition:transform .25s}#il li:hover img{transform:scale(1.08) rotate(-1deg)}
+.hd{transition:transform .2s}.hd:hover{transform:scale(1.25)}
+#toast{position:fixed;left:50%;bottom:26px;background:#000;color:#fff;padding:9px 16px;border-radius:99px;font:500 12px Inter;z-index:9;pointer-events:none;opacity:0}
+#toast.on{animation:tin .35s cubic-bezier(.2,.7,.2,1) both}
+@media print{#toast{display:none}}
+.h3{font:700 9.5pt Inter,Arial,sans-serif;margin:3mm 0 1.5mm;break-after:avoid}
+blockquote{margin:0 0 2mm;padding:.5mm 0 .5mm 3.5mm;border-left:1.5pt solid #000;font-style:italic;color:#333}
+hr{border:0;border-top:.5pt solid #000;margin:3mm 0}
+a{color:#000;text-decoration:underline;text-underline-offset:.5mm}em{font-style:italic}s2{text-decoration:line-through}
+@page{size:A4;margin:0}
+@media print{#side{display:none}#app{display:block;height:auto}body{background:#fff}#pv{padding:0;overflow:visible}.pg{margin:0;box-shadow:none;break-after:page}.pg:last-child{break-after:auto}}
+</style>
+</head>
+<body>
+<div id="app">
+<aside id="side"><div id="ed"></div>
+<div class="bar"><button id="pdf" class="p">Export PDF</button><button id="mdx">Export Markdown</button><button id="rst">Reset</button>
+<p class="nt">PDF: choose Save as PDF in the print dialog. Fonts need internet once.</p></div></aside>
+<main id="pv"></main>
+<div id="toast"></div>
+</div>
+<script>
+const $ = (s) => document.querySelector(s), pad = (n) => String(n).padStart(2, "0");
+const esc = (s) => (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const inline = (s) => (s || "").split(/(`[^`]+`)/).map((x, i) => i % 2 ? "<code>" + esc(x.slice(1, -1)) + "</code>" : esc(x)
+  .replace(/&lt;br\s*\/?&gt;/gi, "<br>")
+  .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>')
+  .replace(/\*\*([^*]+)\*\*|__([^_]+)__/g, (m, a, b) => "<b>" + (a || b) + "</b>")
+  .replace(/(^|[^*\w])\*([^*\s][^*]*?)\*(?!\w)/g, "$1<em>$2</em>")
+  .replace(/(^|[^\w])_([^_\s][^_]*?)_(?!\w)/g, "$1<em>$2</em>")
+  .replace(/~~([^~]+)~~/g, "<s2>$1</s2>")).join("");
+let anim = 1;
+let S = { who: { name: "", roll: "", sub: "Networking Lab" }, cur: "1", per: 1, docs: {} };
+const D = () => S.docs[S.cur] || (S.docs[S.cur] = { title: "", imgs: [], secs: ["Aim", "Concepts", "Procedure", "Verification", "Result"].map((h) => ({ h, b: "", on: 1 })) });
+
+/* storage (IndexedDB, so many screenshots fit) */
+const db = new Promise((ok, no) => { try { const q = indexedDB.open("mylab4", 1); q.onupgradeneeded = () => q.result.createObjectStore("s"); q.onsuccess = () => ok(q.result); q.onerror = () => no(); } catch (e) { no(); } });
+const put = (k, v) => db.then((d) => d.transaction("s", "readwrite").objectStore("s").put(v, k)).catch(() => {});
+const get = (k) => db.then((d) => new Promise((r) => { const q = d.transaction("s").objectStore("s").get(k); q.onsuccess = () => r(q.result); q.onerror = () => r(); })).catch(() => {});
+let t1, t2;
+const upd = () => { clearTimeout(t1); t1 = setTimeout(render, 120); clearTimeout(t2); t2 = setTimeout(() => put("st", S), 500); };
+
+/* markdown to page blocks */
+const cm = (l) => { const i = l.search(/(^\s*[!#]|\s!(\s|$)|\s--\s|^\s*--)/); return i < 0 ? esc(l) || "&nbsp;" : esc(l.slice(0, i)) + "<i>" + esc(l.slice(i)) + "</i>"; };
+const blocks = (b) => {
+  const o = [], L = (b || "").replace(/\r/g, "").split("\n"); let i = 0, m;
+  const cb = (c) => c.forEach((x, j) => o.push('<div class="run cl' + (j ? "" : " f") + (j == c.length - 1 ? " e" : "") + '" data-n="' + (j + 1) + '">' + cm(x) + "</div>"));
+  while (i < L.length) {
+    const l = L[i];
+    if ((m = l.match(/^(\s*)```/))) {
+      const r = new RegExp("^ {0," + m[1].length + "}"), c = []; i++;
+      while (i < L.length && !/^\s*```/.test(L[i])) c.push(L[i++].replace(r, "")); i++;
+      cb(c);
+    } else if (/^\s*\|/.test(l)) {
+      const t = []; while (i < L.length && /^\s*\|/.test(L[i])) t.push(L[i++]);
+      const r = t.filter((x) => !/^\s*\|[\s:|-]+\|?\s*$/.test(x));
+      r.forEach((x, j) => { const c = x.trim().replace(/^\||\|$/g, "").split("|"); o.push('<div class="run tr' + (j ? "" : " th f") + (j == r.length - 1 ? " e" : "") + '" style="grid-template-columns:repeat(' + c.length + ',1fr)">' + c.map((y) => "<span>" + inline(y.trim()) + "</span>").join("") + "</div>"); });
+    } else if ((m = l.match(/^(\s*)([-*]|\d+\.)\s+(.*)/))) {
+      let x = m[3], mk = /^\d/.test(m[2]) ? m[2] : "\u2022"; const c = x.match(/^\[( |x)\]\s*(.*)/i);
+      if (c) { mk = c[1] == " " ? "\u2610" : "\u2611"; x = c[2]; }
+      o.push('<div class="li" style="margin-left:' + Math.floor(m[1].length / 2) * 4 + 'mm"><s>' + mk + "</s><span>" + inline(x) + "</span></div>"); i++;
+    } else if (/^( {4}|\t)\S/.test(l)) {
+      const c = []; while (i < L.length && (/^( {4}|\t)/.test(L[i]) || (!L[i].trim() && /^( {4}|\t)\S/.test(L[i + 1] || "")))) c.push(L[i++].replace(/^( {4}|\t)/, ""));
+      cb(c);
+    } else if ((m = l.match(/^\s{0,3}(#{1,6})\s+(.*)/))) { o.push('<h3 class="h3">' + inline(m[2].replace(/\*\*/g, "")) + "</h3>"); i++;
+    } else if (/^\s*([-*_])(\s*\1){2,}\s*$/.test(l)) { o.push("<hr>"); i++;
+    } else if ((m = l.match(/^\s*>\s?(.*)/))) { o.push("<blockquote>" + inline(m[1]) + "</blockquote>"); i++;
+    } else { if (l.trim()) o.push("<p>" + inline(l.trim()) + "</p>"); i++; }
+  }
+  return o;
+};
+/* sections in output order: Output (screenshots) goes just before Result */
+const items = (d) => {
+  const a = d.secs.filter((s) => s.on && s.b.trim()), i = a.findIndex((s) => /^result/i.test(s.h)), im = d.imgs.length ? [{ h: "Output", img: 1 }] : [];
+  return i < 0 ? [...a, ...im] : [...a.slice(0, i), ...im, ...a.slice(i)];
+};
+
+/* layout: real A4 pages with running header and Page X of Y */
+function render() {
+  const d = D(), w = S.who, V = $("#pv"), B = [], P = []; let n = 0, fg = 0, pg, pc;
+  const who = esc(w.name) + (w.roll ? " \u00b7 " + esc(w.roll) : "");
+  B.push('<div class="ti"><div class="tk"><span>' + esc(w.sub) + "</span><span>Experiment " + pad(S.cur) + "</span></div><h1>" + esc(d.title || "Untitled experiment") + '</h1><div class="tm"><span><em>Name</em>' + (esc(w.name) || "&nbsp;") + "</span><span><em>Roll no.</em>" + (esc(w.roll) || "&nbsp;") + "</span></div></div>");
+  for (const s of items(d)) {
+    B.push("<h2><span>" + pad(++n) + "</span>" + esc(s.h) + "</h2>");
+    if (s.img) {
+      const k = S.per, av = k > 1 ? 83 : 170, mh = k > 1 ? 75 : 110;
+      for (let i = 0; i < d.imgs.length; i += k)
+        B.push('<div class="fr" style="--k:' + k + '">' + d.imgs.slice(i, i + k).map((x) => '<figure><img src="' + x.src + '" width="' + x.w + '" height="' + x.h + '" style="width:' + Math.min(av, (mh * x.w) / x.h).toFixed(1) + 'mm"><figcaption>Fig. ' + ++fg + (x.cap ? ": " + esc(x.cap) : "") + "</figcaption></figure>").join("") + "</div>");
+    } else B.push(...blocks(s.b));
+  }
+  V.innerHTML = "";
+  const np = () => {
+    pg = document.createElement("div"); pg.className = "pg";
+    pg.innerHTML = (P.length ? '<div class="rh"><span>Experiment ' + pad(S.cur) + " \u00b7 " + esc(d.title) + "</span><span>" + who + "</span></div>" : "") + '<div class="pc"></div><div class="ft"></div>';
+    V.append(pg); pc = pg.querySelector(".pc"); P.push(pg);
+  };
+  np();
+  for (const h of B) {
+    const t = document.createElement("div"); t.innerHTML = h; const e = t.firstElementChild; pc.append(e);
+    if (pc.scrollHeight > pc.clientHeight + 1 && pc.children.length > 1) {
+      pc.removeChild(e); const p = pc.lastElementChild; np();
+      if (p && p.tagName == "H2") pc.append(p);
+      pc.append(e);
+    }
+  }
+  if (anim) { P.forEach((p, i) => { p.classList.add("in"); p.style.animationDelay = i * 0.12 + "s"; }); anim = 0; }
+  const k = (e) => (e ? (e.classList.contains("cl") ? 1 : e.classList.contains("tr") ? 2 : 0) : 0);
+  P.forEach((p, i) => {
+    p.querySelector(".ft").innerHTML = "<span>" + esc(w.sub) + "</span><b>Page " + (i + 1) + " of " + P.length + "</b>";
+    const c = [...p.querySelector(".pc").children];
+    c.forEach((e, j) => { const a = k(e); if (a) { if (k(c[j - 1]) != a) e.classList.add("f"); if (k(c[j + 1]) != a) e.classList.add("e"); } });
+  });
+}
+
+/* editor */
+const secHtml = (s, i) => '<div class="sc"><div class="sh"><input type="checkbox" data-on="' + i + '" ' + (s.on ? "checked" : "") + ' title="Include in file"><input data-s="' + i + '" data-f="h" value="' + esc(s.h) + '"><button data-x="rs" data-i="' + i + '" title="Remove section">\u2715</button></div><textarea data-s="' + i + '" data-f="b" rows="' + Math.min(14, Math.max(4, s.b.split("\n").length)) + '" spellcheck="false">' + esc(s.b) + "</textarea></div>";
+function il() {
+  $("#il").innerHTML = D().imgs.map((x, i) => '<li data-i="' + i + '"><span class="hd" draggable="true" data-d="' + i + '" title="Drag to reorder">\u2807</span><img src="' + x.src + '"><div><b>Fig. ' + (i + 1) + '</b><input data-c="' + i + '" placeholder="Caption" value="' + esc(x.cap) + '"></div><button data-x="ri" data-i="' + i + '">\u2715</button></li>').join("");
+}
+function build() {
+  anim = 1;
+  const d = D(), w = S.who;
+  let o = ""; for (let n = 1; n <= 20; n++) { const t = (S.docs[n] || {}).title; o += '<option value="' + n + '"' + (String(n) === S.cur ? " selected" : "") + ">E" + pad(n) + (t ? " \u00b7 " + esc(t.slice(0, 34)) : "") + "</option>"; }
+  $("#ed").innerHTML = '<h2 class="br">Lab File Studio</h2><div class="nt">Pick an experiment, import its .md, add screenshots, export.</div>' +
+    '<h3>You</h3><div class="g2"><label>Name<input data-w="name" value="' + esc(w.name) + '"></label><label>Roll no.<input data-w="roll" value="' + esc(w.roll) + '"></label></div><label>Subject<input data-w="sub" value="' + esc(w.sub) + '"></label>' +
+    '<h3>Experiment</h3><select id="cur">' + o + '</select><label class="btn">Import .md files (select many)<input type="file" id="imp" accept=".md,text/markdown,text/plain" multiple hidden></label><label>Title<input data-t value="' + esc(d.title) + '"></label>' +
+    '<h3>Sections</h3><div id="sl">' + d.secs.map(secHtml).join("") + '</div><button data-x="add">+ Add section</button><p class="nt">Tick a box to include a section. Result is also your conclusion. Markdown, tables and code fences are supported.</p>' +
+    '<h3>Screenshots</h3><input type="file" id="fi" accept="image/*" multiple><p class="nt">Choose, drop or paste (Ctrl+V) images. Drag the handle to reorder.</p><label>Images per row<select id="per"><option value="1">1</option><option value="2">2</option></select></label><ul id="il"></ul>';
+  $("#per").value = S.per; il();
+}
+async function addImgs(files) {
+  for (const f of files) {
+    if (!/^image\//.test(f.type)) continue;
+    const u = URL.createObjectURL(f), im = new Image(); im.src = u;
+    try { await im.decode(); } catch (e) { continue; }
+    const k = Math.min(1, 1600 / im.width), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+    const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height);
+    D().imgs.push({ src: c.toDataURL("image/jpeg", 0.85), w: c.width, h: c.height, cap: "" }); URL.revokeObjectURL(u);
+  }
+  il(); upd();
+}
+async function imp(files) {
+  let last;
+  for (const f of files) {
+    const t = (await f.text()).replace(/\r/g, ""), m = t.match(/^#\s*Experiment\s*[-:\s]*(\d+)/im), no = m ? String(+m[1]) : S.cur;
+    const parts = t.split(/^##\s+/m), head = parts.shift().split("\n"); let title = "";
+    for (const l of head) { if (!l.trim() || /^#\s*Experiment\s*[-:\s]*\d+\s*$/i.test(l.trim())) continue; title = l.replace(/^#+\s*/, "").replace(/^Experiment\s*\d+\s*[:\-\u2013\u2014]\s*/i, "").trim(); break; }
+    const secs = parts.map((p) => { const j = p.indexOf("\n"), h = (j < 0 ? p : p.slice(0, j)).replace(/\*\*/g, "").trim(); return { h, b: (j < 0 ? "" : p.slice(j + 1)).trim(), on: /checklist/i.test(h) ? 0 : 1 }; });
+    const old = S.docs[no]; S.docs[no] = { title, secs, imgs: old ? old.imgs : [] }; last = no;
+  }
+  if (last) { S.cur = last; build(); upd(); toast(files.length + " file(s) imported"); }
+}
+const ed = $("#ed");
+ed.addEventListener("input", (e) => {
+  const t = e.target, d = D(), s = t.dataset;
+  if (s.w) S.who[s.w] = t.value; else if ("t" in s) d.title = t.value; else if (s.f) d.secs[s.s][s.f] = t.value; else if ("c" in s) d.imgs[s.c].cap = t.value; else return;
+  upd();
+});
+ed.addEventListener("change", (e) => {
+  const t = e.target, d = D();
+  if (t.id == "cur") { S.cur = t.value; build(); upd(); } else if (t.id == "per") { S.per = +t.value; upd(); }
+  else if (t.id == "fi") { addImgs(t.files); t.value = ""; } else if (t.id == "imp") { imp(t.files); t.value = ""; }
+  else if ("on" in t.dataset) { d.secs[t.dataset.on].on = t.checked ? 1 : 0; upd(); }
+});
+ed.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-x]"); if (!b) return; const d = D(), x = b.dataset.x;
+  if (x == "add") { d.secs.push({ h: "New section", b: "", on: 1 }); build(); }
+  else if (x == "rs") { d.secs.splice(+b.dataset.i, 1); build(); }
+  else if (x == "ri") { d.imgs.splice(+b.dataset.i, 1); il(); }
+  upd();
+});
+let dr = -1;
+ed.addEventListener("dragstart", (e) => { const h = e.target.closest && e.target.closest("[data-d]"); if (!h) return; dr = +h.dataset.d; e.dataTransfer.setData("text/plain", "img"); e.dataTransfer.setDragImage(h.closest("li"), 12, 12); });
+ed.addEventListener("dragover", (e) => { e.preventDefault(); const li = e.target.closest("#il li"); document.querySelectorAll("#il li.ov").forEach((x) => x !== li && x.classList.remove("ov")); if (li && dr >= 0) li.classList.add("ov"); });
+ed.addEventListener("dragend", () => { dr = -1; il(); });
+ed.addEventListener("drop", (e) => {
+  e.preventDefault();
+  if (dr < 0) { if (e.dataTransfer.files.length) addImgs(e.dataTransfer.files); return; }
+  const li = e.target.closest("#il li"); if (li) { const a = D().imgs, to = +li.dataset.i; a.splice(to, 0, a.splice(dr, 1)[0]); upd(); }
+  dr = -1; il();
+});
+document.addEventListener("paste", (e) => { const f = [...(e.clipboardData ? e.clipboardData.files : [])]; if (f.length) { e.preventDefault(); addImgs(f); } });
+
+const toast = (m) => { const e = $("#toast"); e.textContent = m; e.classList.remove("on"); void e.offsetWidth; e.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => (e.style.transition = "opacity .4s", e.style.opacity = 0, e.classList.remove("on")), 2200); e.style.opacity = ""; };
+/* exports */
+const base = () => "e" + pad(S.cur) + "-" + (D().title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "lab");
+$("#pdf").onclick = () => { const old = document.title; document.title = base(); render(); window.onafterprint = () => (document.title = old); toast("Opening print dialog: Save as PDF"); window.print(); };
+$("#mdx").onclick = () => {
+  const d = D(), w = S.who; let f = 0;
+  let o = "# Experiment " + S.cur + ": " + d.title + "\n\n**Name:** " + w.name + "  \n**Roll no.:** " + w.roll + "  \n**Subject:** " + w.sub + "\n\n";
+  for (const s of items(d)) o += "## " + s.h + "\n\n" + (s.img ? d.imgs.map((x) => "![Fig. " + ++f + (x.cap ? ": " + x.cap : "") + "](" + x.src + ")").join("\n\n") : s.b.trim()) + "\n\n";
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([o.trim() + "\n"], { type: "text/markdown" })); a.download = base() + ".md"; a.click(); toast("Markdown exported");
+};
+$("#rst").onclick = () => { if (confirm("Clear this experiment, including its screenshots?")) { delete S.docs[S.cur]; build(); upd(); } };
+
+get("st").then((v) => { if (v) S = Object.assign(S, v); build(); render(); if (document.fonts) document.fonts.ready.then(render); });
+</script>
+</body>
+</html>
